@@ -29,6 +29,7 @@ namespace Blogs
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<BloggingContext>(options => options.UseSqlServer(Configuration["Data:Blog:ConnectionString"]));
+            services.AddControllersWithViews();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
