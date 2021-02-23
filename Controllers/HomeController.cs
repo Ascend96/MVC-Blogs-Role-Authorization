@@ -31,5 +31,10 @@ namespace Blogs.Controllers
             }
             return View();
         }
+        public IActionResult DeleteBlog(int id)
+        {
+            _bloggingContext.DeleteBlog(_bloggingContext.Blogs.FirstOrDefault(b => b.BlogId == id));
+            return RedirectToAction("Index");
+        }
     }
 }
