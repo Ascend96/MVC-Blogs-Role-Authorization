@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Blogs.Models;
 using System.Linq;
-
 using Microsoft.AspNetCore.Authorization;
-
 namespace Blogs.Controllers
 {
     public class HomeController : Controller
@@ -13,11 +11,16 @@ namespace Blogs.Controllers
         public HomeController(BloggingContext db) => _bloggingContext = db;
 
         public IActionResult Index() => View(_bloggingContext.Blogs.OrderBy(b => b.Name));
-        [Authorize]
+        public IActionResult BlogDetail(int id) => View(new PostViewModel
+        {
+            blog = _bloggingContext.Blogs.FirstOrDefault(b => b.BlogId == id),
+            Posts = _bloggingContext.Posts.Where(p => p.BlogId == id)
+        });
+        [Authorize(Roles = "moderate")]
         public IActionResult AddBlog() => View();
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize]
+        [Authorize(Roles = "moderate")]
         public IActionResult AddBlog(Blog model)
         {
             if (ModelState.IsValid)
@@ -31,16 +34,16 @@ namespace Blogs.Controllers
                     _bloggingContext.AddBlog(model);
                     return RedirectToAction("Index");
                 }
-                
             }
             return View();
         }
+        [Authorize(Roles = "moderate")]
         public IActionResult DeleteBlog(int id)
         {
             _bloggingContext.DeleteBlog(_bloggingContext.Blogs.FirstOrDefault(b => b.BlogId == id));
             return RedirectToAction("Index");
         }
-                 public IActionResult AddPost(int id)
+         public IActionResult AddPost(int id)
         {
             ViewBag.BlogId = id;
             return View();
@@ -66,10 +69,5 @@ namespace Blogs.Controllers
             _bloggingContext.DeletePost(post);
             return RedirectToAction("BlogDetail", new { id = BlogId });
         }
-        public IActionResult BlogDetail(int id) => View(new PostViewModel
-        {
-            blog = _bloggingContext.Blogs.FirstOrDefault(b => b.BlogId == id),
-            Posts = _bloggingContext.Posts.Where(p => p.BlogId == id)
-        });
     }
 }

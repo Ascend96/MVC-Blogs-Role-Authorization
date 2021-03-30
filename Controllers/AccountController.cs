@@ -27,7 +27,7 @@ namespace Blogs.Controllers
             ViewBag.returnUrl = returnUrl;
             return View();
         }
-        
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -48,6 +48,14 @@ namespace Blogs.Controllers
                 ModelState.AddModelError(nameof(UserLogin.Email), "Invalid user or password");
             }
             return View(details);
+        }
+        [AllowAnonymous]
+        public ViewResult AccessDenied() => View();
+
+        public async Task<IActionResult> Logout()
+        {
+            await signInManager.SignOutAsync();
+            return RedirectToAction("Index", "Home");
         }
     }
 }
