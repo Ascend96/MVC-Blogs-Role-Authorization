@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Blogs.Models;
 using System.Linq;
 
+using Microsoft.AspNetCore.Authorization;
+
 namespace Blogs.Controllers
 {
     public class HomeController : Controller
@@ -11,7 +13,7 @@ namespace Blogs.Controllers
         public HomeController(BloggingContext db) => _bloggingContext = db;
 
         public IActionResult Index() => View(_bloggingContext.Blogs.OrderBy(b => b.Name));
-        
+        [Authorize]
         public IActionResult AddBlog() => View();
         [HttpPost]
         [ValidateAntiForgeryToken]

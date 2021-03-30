@@ -10,12 +10,13 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Blogs.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace Blogs
 {
     public class Startup
     {
-                // this class needs the connection info stored in the 
+        // this class needs the connection info stored in the 
         // appsettings.json config file - that's a dependency
         // with dependency injection we expose the config file to this class
         public IConfiguration Configuration { get; }
@@ -28,7 +29,10 @@ namespace Blogs
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            // this is where we use the config info for our connection string
             services.AddDbContext<BloggingContext>(options => options.UseSqlServer(Configuration["Data:Blog:ConnectionString"]));
+            services.AddDbContext<AppIdentityDbContext>(options => options.UseSqlServer(Configuration["Data:AppIdentity:ConnectionString"]));
+            services.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<AppIdentityDbContext>().AddDefaultTokenProviders();
             services.AddControllersWithViews();
         }
 
@@ -42,9 +46,12 @@ namespace Blogs
 
             app.UseRouting();
 
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
-               endpoints.MapControllerRoute(
+                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
