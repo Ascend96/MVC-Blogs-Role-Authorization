@@ -51,6 +51,7 @@ namespace Blogs.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public IActionResult AddPost(int id, Post post)
         {
             post.BlogId = id;
@@ -62,6 +63,7 @@ namespace Blogs.Controllers
             @ViewBag.BlogId = id;
             return View();
         }
+        [Authorize(Roles = "moderate")]
         public IActionResult DeletePost(int id)
         {
             Post post = _bloggingContext.Posts.FirstOrDefault(p => p.PostId == id);

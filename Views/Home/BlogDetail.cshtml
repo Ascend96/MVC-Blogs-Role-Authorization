@@ -14,7 +14,14 @@ else
         {
             <li>
                 @post.Title - @post.Content |
-                <a asp-action="DeletePost" asp-route-id="@post.PostId">Delete</a>
+                @if (User?.Identity?.IsAuthenticated ?? true)
+                {
+                 if (User.IsInRole("moderate"))
+                    {
+                    <a asp-action="DeletePost" asp-route-id="@post.PostId">Delete</a>
+                    }
+
+                }
             </li>
         }
     </ul>
